@@ -1,54 +1,48 @@
-#include<stdio.h>
-#include<string.h>  
+#include <stdio.h>
+#include <string.h>
 
-#define NO 256
+int boyermoore(char p[], char t[]) {
+    int bctable[128], i, j, k;
+    int n = strlen(t);
+    int m = strlen(p);
 
-int max(int a,int b)
-{
-    return (a>b)?a:b;
-}
+    for (j = 0; j < 128; j++)
+        bctable[j] = m;
 
-void badcharheu(char *str,int size,int badchar[NO])
-{
-    int i;
-    for(i=0;i<NO;i++)
-        badchar[i]=-1;
-    
-    for(i=0;i<size;i++)
-        badchar[(int)str[i]]=1;
-}
-
-void search(char* txt,char* pat)
-{
-    int m=strlen(pat);
-    int n=strlen(txt);
-
-    int badchar[NO];
-    badcharheu(pat,m,badchar);
-
-    int s=0;
-
-    while(s<=(n-m))
-    {
-        int j=m-1;
-        while(j>=0&&pat[j]==txt[s+j])
-            j--;
-        if(j<0)
-        {
-            printf("\n pattern occurs at shift=%d",s);           
-        
-            s+=(s+m<n)?m-badchar[txt[s+m]]:1;
-        }
-        else
-        {
-            s+=max(1,j-badchar[txt[s+j]]);
-        }
+    for (j = 0; j < m - 1; j++) {
+        k = (int)p[j];
+        bctable[k] = m - j - 1;
     }
+
+    i = m - 1;
+
+    while (i < n) {
+        j = m - 1;
+        while (j >= 0 && p[j] == t[i]) {
+            i--;
+            j--;
+        }
+
+        if (j == -1)
+            return i + 1;
+
+        i = i + bctable[(int)t[i]];
+    }
+
+    return 0;
 }
-int main()
-{
-    char txt[] = "ABAAABCD";
-    char pat[] = "ABC";
-    search(txt, pat);
+
+int main() {
+    char t[] = "welcometodsatmcollege";
+    char p[] = "dsatm";
+    int i;
+
+    i = boyermoore(p, t);
+
+    if (i)
+        printf("Pattern is present in text at position %d\n", i + 1);
+    else
+        printf("Pattern is not present in text\n");
+
     return 0;
 }
